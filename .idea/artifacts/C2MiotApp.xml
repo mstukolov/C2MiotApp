@@ -1,0 +1,21 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="C2MiotApp">
+    <output-path>$PROJECT_DIR$/out/artifacts/C2MiotApp</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="C2MiotApp" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: org.primefaces.themes:all-themes:1.0.10" />
+          <element id="library" level="project" name="Maven: com.sun.faces:jsf-api:1.2" />
+          <element id="library" level="project" name="Maven: org.glassfish:javax.faces:2.2.1" />
+          <element id="library" level="project" name="Maven: com.sun.faces:jsf-impl:2.2.11" />
+          <element id="library" level="project" name="Maven: javax.servlet:jstl:1.1.0" />
+          <element id="library" level="project" name="Maven: org.primefaces:primefaces:6.0" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="C2MiotApp/web/Web" />
+    </root>
+  </artifact>
+</component>
