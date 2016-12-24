@@ -1,5 +1,8 @@
 package controllers;
 
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.primefaces.model.chart.MeterGaugeChartModel;
 
 import javax.faces.application.FacesMessage;
@@ -21,6 +24,8 @@ public class MainManagedBean implements Serializable {
 
     private Date date1;
     private MeterGaugeChartModel meterGaugeChartModel;
+    private MqttClient mqttClient;
+
 
     public MainManagedBean() {
         List<Number> intervals = new ArrayList<Number>(){
@@ -36,6 +41,45 @@ public class MainManagedBean implements Serializable {
         meterGaugeChartModel.setGaugeLabel("kg.");
     }
 
+    public void startMonitoring(){
+        addMessage("Monitoring is starting....");
+
+        startSubscribing();
+        addMessage("Monitoring is started!");
+    }
+
+
+    public void startSubscribing(){
+        //Bluemix connection
+        String BROKER_URL = "tcp://omzkv9.messaging.internetofthings.ibmcloud.com:1883";
+        String topic = "iot-2/type/Weight/id/WeightDevice1/evt/+/fmt/json";
+        String clientId ="a:omzkv9:app1";
+        String authmethod = "a-omzkv9-lzukrtsqgg";
+        String authtoken = "iFUwTmeySz52iW6r-X";
+
+        try {
+            mqttClient = new MqttClient(BROKER_URL, clientId);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setCleanSession(true);
+        options.setUserName(authmethod);
+        options.setPassword(authtoken.toCharArray());
+
+        try {
+
+            mqttClient.setCallback(new SubscribeCallback());
+            mqttClient.connect(options);
+            mqttClient.subscribe(topic);
+            System.out.println("Subscriber is now listening to " + topic);
+
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
+    }
     public void setMeterGaugeChartModel(){
         meterGaugeChartModel.setValue(getRandomValue(0, 200));
     }

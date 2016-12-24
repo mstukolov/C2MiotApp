@@ -1,0 +1,8 @@
+applications:
+- path: target/C2MiotApp.war
+  memory: 256M
+  instances: 1
+  domain: mybluemix.net
+  name: C2MiotApp
+  host: C2MiotApp
+  disk_quota: 1024M

@@ -8,7 +8,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:c="http://java.sun.com/jsp/jstl/core">
 <h:head>
-    <title><ui:insert name="title">TMZ</ui:insert></title>
+    <title><ui:insert name="title">C2M</ui:insert></title>
 </h:head>
 <h:body>
 <f:view>
@@ -19,10 +19,12 @@
        <br/>
 
        <h:form id="form1">
-       <p:growl id="messages"/><p:poll interval="1" listener="#{mainManagedBean.setMeterGaugeChartModel()}" update=":form1" />
+       <p:growl id="messages"/>
+
+           <!--<p:poll interval="1" listener="#{mainManagedBean.setMeterGaugeChartModel()}" update=":form1" />-->
 
            <p:commandButton value="Начать мониторинг"
-                        actionListener="#{mainManagedBean.addMessage('Monitoring has starded')}"
+                        actionListener="#{mainManagedBean.startMonitoring()}"
                         style = "width: 400px; height: 100px"
                         update=":form1:messages"/>
            <p:commandButton value="Получить показание"
@@ -31,12 +33,10 @@
                         update=":form1"/>
 
 
-
-
            <!--<p:calendar id="inline" value="#{mainManagedBean.date1}" mode="inline" visible="false"/>-->
 
-           <p:chart type="metergauge"
-                    model="#{mainManagedBean.meterGaugeChartModel}" style="width:400px;height:250px" />
+           <!--<p:chart type="metergauge"
+                    model="#{mainManagedBean.meterGaugeChartModel}" style="width:400px;height:250px" />-->
        </h:form>
    </f:view>
 </h:body>

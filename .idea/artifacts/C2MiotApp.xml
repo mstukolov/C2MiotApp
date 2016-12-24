@@ -13,6 +13,25 @@
           <element id="library" level="project" name="Maven: com.sun.faces:jsf-impl:2.2.11" />
           <element id="library" level="project" name="Maven: javax.servlet:jstl:1.1.0" />
           <element id="library" level="project" name="Maven: org.primefaces:primefaces:6.0" />
+          <element id="library" level="project" name="Maven: javax.websocket:javax.websocket-api:1.1" />
+          <element id="library" level="project" name="Maven: log4j:log4j:1.2.17" />
+          <element id="library" level="project" name="Maven: org.apache.sling:org.apache.sling.commons.json:2.0.18" />
+          <element id="library" level="project" name="Maven: org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0" />
+          <element id="library" level="project" name="Maven: org.fusesource.hawtbuf:hawtbuf:1.11" />
+          <element id="library" level="project" name="Maven: org.fusesource.hawtdispatch:hawtdispatch-transport:1.22" />
+          <element id="library" level="project" name="Maven: org.fusesource.hawtdispatch:hawtdispatch:1.22" />
+          <element id="library" level="project" name="Maven: org.fusesource.mqtt-client:mqtt-client:1.14" />
+          <element id="library" level="project" name="Maven: org.glassfish.grizzly:grizzly-framework:2.3.25" />
+          <element id="library" level="project" name="Maven: org.glassfish.grizzly:grizzly-http-server:2.3.25" />
+          <element id="library" level="project" name="Maven: org.glassfish.grizzly:grizzly-http:2.3.25" />
+          <element id="library" level="project" name="Maven: org.glassfish.tyrus:tyrus-client:1.13" />
+          <element id="library" level="project" name="Maven: org.glassfish.tyrus:tyrus-container-grizzly-client:1.13" />
+          <element id="library" level="project" name="Maven: org.glassfish.tyrus:tyrus-container-grizzly-server:1.13" />
+          <element id="library" level="project" name="Maven: org.glassfish.tyrus:tyrus-core:1.13" />
+          <element id="library" level="project" name="Maven: org.glassfish.tyrus:tyrus-server:1.13" />
+          <element id="library" level="project" name="Maven: org.glassfish.tyrus:tyrus-spi:1.13" />
+          <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.8.0" />
+          <element id="library" level="project" name="Maven: com.googlecode.json-simple:json-simple:1.1" />
         </element>
       </element>
       <element id="javaee-facet-resources" facet="C2MiotApp/web/Web" />

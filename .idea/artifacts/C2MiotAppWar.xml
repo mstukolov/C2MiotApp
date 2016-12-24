@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="C2MiotAppWar">
+    <output-path>$PROJECT_DIR$/out/artifacts/C2MiotAppWar</output-path>
+    <root id="archive" name="C2MiotAppWar.war">
+      <element id="artifact" artifact-name="C2MiotApp" />
+    </root>
+  </artifact>
+</component>
