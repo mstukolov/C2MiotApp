@@ -30,8 +30,8 @@
     <orderEntry type="library" scope="PROVIDED" name="GlassFish 3.1.2.1-SNAPSHOT" level="application_server_libraries" />
     <orderEntry type="library" name="Maven: org.primefaces:primefaces:6.0" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:jstl:1.1.0" level="project" />
-    <orderEntry type="library" name="Maven: com.sun.faces:jsf-impl:2.2.11" level="project" />
-    <orderEntry type="library" name="Maven: com.sun.faces:jsf-api:1.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.sun.faces:jsf-impl:2.2.11" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.sun.faces:jsf-api:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish:javax.faces:2.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.primefaces.themes:all-themes:1.0.10" level="project" />
     <orderEntry type="library" name="Maven: org.apache.sling:org.apache.sling.commons.json:2.0.18" level="project" />

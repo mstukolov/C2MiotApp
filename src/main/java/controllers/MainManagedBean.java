@@ -1,19 +1,20 @@
 package controllers;
 
+import model.Events;
+import model.ScaleMessage;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.primefaces.model.chart.MeterGaugeChartModel;
+import org.primefaces.model.chart.*;
+import util.DateAdapter;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Maxim on 23.12.2016.
@@ -24,7 +25,49 @@ public class MainManagedBean implements Serializable {
 
     private Date date1;
     private MeterGaugeChartModel meterGaugeChartModel;
+    private MeterGaugeChartModel dryWeightMeterGaugeChartModel;
+
     private MqttClient mqttClient;
+    private List<ScaleMessage> messages;
+    private Integer countMessages;
+    private LineChartModel curWeightlineModel;
+
+    private LineChartModel model;
+    private LineChartSeries series1;
+
+    private List<Events> eventsList;
+
+    @PostConstruct
+    public void init() {
+        createLineModels();
+        eventsList = new LinkedList<Events>();
+    }
+
+    private void createLineModels() {
+        curWeightlineModel = initLinearModel();
+        curWeightlineModel.setTitle("Device Monitoring");
+        curWeightlineModel.setLegendPosition("e");
+        Axis yAxis = curWeightlineModel.getAxis(AxisType.Y);
+        yAxis.setMin(0);
+        yAxis.setMax(200);
+
+    }
+
+    private LineChartModel initLinearModel() {
+        model = new LineChartModel();
+        series1 = new LineChartSeries();
+        series1.setLabel("Device");
+        model.addSeries(series1);
+        model.getAxis(AxisType.Y).setLabel("Values");
+
+        /*DateAxis axis = new DateAxis("Dates");
+        axis.setTickAngle(-50);
+        axis.setMax("2017-01-01 00:10:56");
+        axis.setTickFormat("%H:%#M:%S");
+        model.getAxes().put(AxisType.X, axis);*/
+
+        return model;
+    }
 
 
     public MainManagedBean() {
@@ -37,14 +80,16 @@ public class MainManagedBean implements Serializable {
             }
         };
         meterGaugeChartModel = new MeterGaugeChartModel(140, intervals);
-        meterGaugeChartModel.setTitle("Weight IOT Device");
+        meterGaugeChartModel.setTitle("Current Weight");
         meterGaugeChartModel.setGaugeLabel("kg.");
+
+        dryWeightMeterGaugeChartModel = new MeterGaugeChartModel(140, intervals);
+        dryWeightMeterGaugeChartModel.setTitle("Dry Weight");
+        dryWeightMeterGaugeChartModel.setGaugeLabel("kg.");
     }
 
     public void startMonitoring(){
-        addMessage("Monitoring is starting....");
-
-        startSubscribing();
+        //startSubscribing();
         addMessage("Monitoring is started!");
     }
 
@@ -80,9 +125,27 @@ public class MainManagedBean implements Serializable {
         }
 
     }
-    public void setMeterGaugeChartModel(){
-        meterGaugeChartModel.setValue(getRandomValue(0, 200));
+
+    public void updateCurrentValues(){
+
+        /*meterGaugeChartModel.setValue(ScaleMessage.getLast().getCurrentWeight());
+        dryWeightMeterGaugeChartModel.setValue(ScaleMessage.getLast().getDryWeight());
+        series1.set((new Date()).getTime(), ScaleMessage.getLast().getCurrentWeight());
+        */
+
+        int curWeight = getRandomValue(0, 150);
+        int dryWeight = getRandomValue(0, 50);
+
+        if(curWeight < 20){
+            eventsList.add(new Events("Warning", "ESP8266", "The water level is low. Replace Balon."));
+        }
+        meterGaugeChartModel.setValue(curWeight);
+        dryWeightMeterGaugeChartModel.setValue(dryWeight);
+        series1.set((new Date()).getTime(), curWeight);
+
+        addMessage("Data is updated");
     }
+
     public int getRandomValue(int Low, int High){
         Random r = new Random();
         return r.nextInt(High-Low) + Low;
@@ -102,6 +165,26 @@ public class MainManagedBean implements Serializable {
     }
 
     public MeterGaugeChartModel getMeterGaugeChartModel() {
+        //meterGaugeChartModel.setValue(ScaleMessage.getLast().getCurrentWeight());
         return meterGaugeChartModel;
+    }
+    public LineChartModel getCurWeightlineModel() {
+        return curWeightlineModel;
+    }
+
+    public List<ScaleMessage> getMessages() {
+        return ScaleMessage.getMessages();
+    }
+
+    public Integer getCountMessages() {
+        return countMessages;
+    }
+
+    public MeterGaugeChartModel getDryWeightMeterGaugeChartModel() {
+        return dryWeightMeterGaugeChartModel;
+    }
+
+    public List<Events> getEventsList() {
+        return eventsList;
     }
 }

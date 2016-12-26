@@ -1,7 +1,6 @@
 package controllers;
 
-import com.google.gson.Gson;
-import model.Message;
+import model.ScaleMessage;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -21,8 +20,6 @@ public class SubscribeCallback implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         parseJsonReply(message.toString());
-        /*System.out.println("Message arrived. Topic: " + topic + "  Message: " + message.toString());*/
-
     }
 
     @Override
@@ -41,13 +38,14 @@ public class SubscribeCallback implements MqttCallback {
         }
         JSONObject d= (JSONObject) jsonObject.get("d");
 
-        String lightSwarm = (String) d.get("lightSwarm");
-        Long sampleCount = (Long) d.get("sampleCount");
-        Long lightValue = (Long) d.get("lightValue");
+        String deviceid = (String) d.get("deviceid");
+        Long currentWeight = (Long) d.get("currentWeight");
+        Long dryWeight = (Long) d.get("dryWeight");
 
-        Message msg = new Message(lightSwarm, sampleCount, lightValue);
+        ScaleMessage msg = ScaleMessage.create(deviceid, currentWeight, dryWeight);
+
         System.out.printf("Get message: %s,%s,%s",
-                msg.getLightSwarm(), msg.getLightValue(), msg.getSampleCount());
+                msg.getDeviceid(), msg.getCurrentWeight(), msg.getDryWeight());
 
     }
 }
