@@ -8,18 +8,18 @@ import java.util.List;
  */
 public class ScaleMessage extends AbstractMessage{
 
-    private Long currentWeight;
-    private Long dryWeight;
+    private Float currentWeight;
+    private Float dryWeight;
 
-    private static LinkedList<ScaleMessage> messages = new LinkedList<ScaleMessage>();
+    public static LinkedList<ScaleMessage> messages = new LinkedList<ScaleMessage>();
 
-    public ScaleMessage(String deviceid, Long currentWeight, Long dryWeight) {
+    public ScaleMessage(String deviceid, Float currentWeight, Float dryWeight) {
         super(deviceid);
         this.currentWeight = currentWeight;
         this.dryWeight = dryWeight;
     }
 
-    public static ScaleMessage create(String deviceid, Long currentWeight, Long dryWeight){
+    public static ScaleMessage create(String deviceid, Float currentWeight, Float dryWeight){
         ScaleMessage msg = new ScaleMessage(deviceid, currentWeight, dryWeight);
         messages.add(msg);
         return msg;
@@ -37,19 +37,19 @@ public class ScaleMessage extends AbstractMessage{
         return messages;
     }
 
-    public Long getCurrentWeight() {
+    public Float getCurrentWeight() {
         return currentWeight;
     }
 
-    public void setCurrentWeight(Long currentWeight) {
+    public void setCurrentWeight(Float currentWeight) {
         this.currentWeight = currentWeight;
     }
 
-    public Long getDryWeight() {
+    public Float getDryWeight() {
         return dryWeight;
     }
 
-    public void setDryWeight(Long dryWeight) {
+    public void setDryWeight(Float dryWeight) {
         this.dryWeight = dryWeight;
     }
 }

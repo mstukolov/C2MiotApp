@@ -4,3 +4,12 @@
 .secondColumn {
     width: 800px;
 }
+.thirdColumn {
+    width: 800px;
+}
+.ui-dashboard-column {width:900px;}
+.highlight1 {
+    background: yellow  !important ;
+}.highlight2 {
+    background: wheat  !important ;
+}

@@ -13,66 +13,146 @@
 </h:head>
 <h:body>
     <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript" ></script>
-    <script type="text/javascript" language="javascript" src="plugins/jqplot.dateAxisRenderer.js"></script>
-
 <f:view>
-    <p:outputLabel value="Сервер Мониторинга IOT" style="font-size:48px; width: 350px; height: 40px"/>
+    <p:outputLabel value="Smart Cooler" style="font-size:48px; width: 350px; height: 40px"/>
 </f:view>
 
-
- <!--      <p:commandButton value="Начать мониторинг"
-                        actionListener="#{mainManagedBean.startMonitoring()}"
-                        style = "width: 400px; height: 50px"
-                        update=":form1:messages"/>-->
 
 
        <h:form id="form1">
 
            <p:growl id="messages"/>
-          <!-- <p:poll interval="5" listener="#{mainManagedBean.updateCurrentValues()}" update=":form1" />-->
-       <br/>
-           <p:commandButton value="Обновить данные"
-                            actionListener="#{mainManagedBean.updateCurrentValues()}"
-                            style = "width: 400px; height: 50px"
-                            update=":form1:linechart,
-                                    :form1:currentWeightGauge,
-                                    :form1:dryWeightMeterGauge
-                                    :form1:eventsdata
-            "/>
-           <h:panelGrid  columns="2" cellpadding="10" columnClasses="firstColumn,secondColumn">
-               <h:column>
-                    <p:gmap center="41.381542, 2.122893" zoom="15" type="HYBRID" style="width:500px;height:300px" />
-               </h:column>
-               <h:column>
-                    <p:chart type="line" id="linechart" model="#{mainManagedBean.curWeightlineModel}" style="width:800px;height:300px;"/>
-               </h:column>
-               <h:column>
-                   <p:dataTable id="eventsdata" var="events" value="#{mainManagedBean.eventsList}" scrollable="true" scrollHeight="150">
-                       <p:column headerText="Type">
-                           <h:outputText value="#{events.type}" />
-                       </p:column>
+           <p:poll interval="15"
+                   listener="#{mainManagedBean.refreshCurrentValues()}"
+                             update=":form1:linechart,:form1:currentWeightGauge"/>
 
-                       <p:column headerText="DeviceId">
-                           <h:outputText value="#{events.deviceId}" />
-                       </p:column>
+    <div style="height:500px">
 
-                       <p:column headerText="Message">
-                           <h:outputText value="#{events.eventMessage}" />
-                       </p:column>
+            <p:growl id="msgs" showDetail="true" />
+            <p:dashboard id="board" model="#{mainManagedBean.dashboardModel}">
+                <p:ajax event="reorder" listener="#{mainManagedBean.handleReorder}" update="messages" />
+
+                <p:panel id="gauge" header="Вес сейчас" toggleable="true" closable="true" style="width:880px;height:300px">
+                    <p:chart type="metergauge" id="currentWeightGauge"
+                             model="#{mainManagedBean.meterGaugeChartModel}" style="width:400px;height:250px" />
+                </p:panel>
+
+
+                <p:panel id="chart" header="Онлайн-мониторинг за 10 минут" style="width:880px;height:450px" toggleable="true" closable="true">
+                    <p:chart type="line"
+                             id="linechart"
+                             model="#{mainManagedBean.curWeightlineModel}"
+                             style="width:800px;height:400px;"/>
+
+                    <script type="application/javascript">
+                        function chartExtender() {
+                            var curTime = new Date();
+                            var minX = curTime - 1000*60*2;
+                            var maxX = minX + 1000*60*3;
+                            this.cfg.axes = {
+                                yaxis : {
+                                    tickOptions : {
+                                        formatString : "%d(kg.)",
+                                        angle : 0
+                                    }
+                                },
+                                xaxis : {
+                                    renderer:$.jqplot.DateAxisRenderer,
+                                    tickInterval:15*1*1,
+                                    min:minX,
+                                    max:maxX,
+                                    rendererOptions: { tickRenderer: $.jqplot.CanvasAxisTickRenderer},
+                                    label: "MaxTime",
+                                    tickOptions : {
+                                        show: true,
+                                        fontSize:'6pt',
+                                        formatString : '%H:%M:%S',
+                                        angle : -50
+                                    }
+                                }
+                            }
+
+                            this.cfg.grid = {
+                                background: 'transparent',
+                                gridLineColor: '#303030',
+                                drawBorder: false,
+                            };
+                        };
+                    </script>
+                </p:panel>
+
+                <p:panel id="map" header="Местоположение" style="width:880px;height:550px"  toggleable="true" closable="true">
+                    <p:gmap center="55.739732, 37.605508"
+                            model="#{mainManagedBean.emptyModel}"
+                            zoom="15" type="terrain" style="width:860px;height:500px" />
+                </p:panel>
+
+                <p:panel id="eventspanel" header="Сообщения об ошибках" style="width:880px;height:325px" toggleable="true" closable="true">
+                    <p:dataTable id="eventsdata" var="events"
+                                 rowIndexVar="rowIndex"
+                                 rowStyleClass="#{events.type eq 'Critical' ? 'highlight1' : 'highlight2'}"
+                                 value="#{mainManagedBean.eventsList}"
+                                 scrollable="true" scrollHeight="250"
+                                 style="height:500px">
+
+                        <p:column headerText="Date" style="width: 180px">
+                            <h:outputText value="#{events.date}"/>
+                        </p:column>
+                        <p:column headerText="Type" style="width: 180px">
+                            <h:outputText value="#{events.type}" />
+                        </p:column>
+
+                        <p:column headerText="DeviceId" style="width: 180px">
+                            <h:outputText value="#{events.deviceid}" />
+                        </p:column>
+
+                        <p:column headerText="Message" style="width: 180px">
+                            <h:outputText value="#{events.message}" />
+                        </p:column>
                     </p:dataTable>
-               </h:column>
-               <h:column>
-               <h:panelGrid columns="2" cellpadding="10">
-                   <p:chart type="metergauge" id="currentWeightGauge"
-                            model="#{mainManagedBean.meterGaugeChartModel}" style="width:400px;height:250px" />
+                </p:panel>
 
-                   <p:chart type="metergauge" id="dryWeightMeterGauge"
-                            model="#{mainManagedBean.dryWeightMeterGaugeChartModel}" style="width:400px;height:250px" />
-               </h:panelGrid>
-               </h:column>
-           </h:panelGrid>
+                <p:panel id="manage" header="Управление" style="width:880px;height:250px" toggleable="true" closable="true">
 
+                    <h:panelGrid  columns="2"  columnClasses="firstColumn,secondColumn">
+                    <h:column>
+                        <p:commandButton value="Запуск сбора данных"
+                                         actionListener="#{mainManagedBean.startMonitoring()}"
+                                         style = "width: 400px; height: 50px"
+                                         update=":form1:messages"/>
+
+                        <p:commandButton value="Остановить сбор данных"
+                                         actionListener="#{mainManagedBean.stopMonitoring()}"
+                                         style = "width: 400px; height: 50px"
+                                         update=":form1:messages"/>
+                        <p:selectBooleanButton id="rele" value="#{mainManagedBean.reboot}"
+                                               onLabel="Выключить кулер" offLabel="Включить кулер"
+                                               style = "width: 400px; height: 50px">
+                            <p:ajax update=":form1:messages" listener="#{mainManagedBean.rebootDevice()}" />
+                        </p:selectBooleanButton>
+                    </h:column>
+                    <h:column>
+
+                        <p:commandButton value="Статистика"
+                                         actionListener="#{mainManagedBean.stopMonitoring()}"
+                                         style = "width: 400px; height: 50px"
+                                         update=":form1:messages"/>
+                        <p:commandButton value="Обновить Сообщения"
+                                         actionListener="#{mainManagedBean.updateEventsLog()}"
+                                         style = "width: 400px; height: 50px"
+                                         update=":form1:messages, form1:eventsdata"/>
+                        <p:commandButton value="Обновить все"
+                                         actionListener="#{mainManagedBean.refreshCurrentValues()}"
+                                         style = "width: 400px; height: 50px"
+                                         update=":form1:linechart,:form1:currentWeightGauge,:form1:eventsdata"/>
+                    </h:column>
+                    </h:panelGrid>
+                </p:panel>
+            </p:dashboard>
+
+            <div style="clear:both" />
+
+    </div>
        </h:form>
-
 </h:body>
 </html>
