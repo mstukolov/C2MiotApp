@@ -47,10 +47,14 @@ public class MainManagedBean implements Serializable {
     private MqttClient mqttClient;
     private List<ScaleMessage> messages;
     private Integer countMessages;
+    //Инициализация графиков
     private LineChartModel curWeightlineModel;
+    private LineChartModel periodicWeightlineModel;
 
     private LineChartModel model;
     private LineChartSeries series1;
+    private LineChartSeries series2days;
+
 
     private List<Events> eventsList;
     public ScaleMessage scaleMessage;
@@ -81,14 +85,14 @@ public class MainManagedBean implements Serializable {
 
         meterGaugeChartModel.setValue(0);
         dryWeightMeterGaugeChartModel.setValue(0);
-        series1.set((new Date()).getTime(), 0);
+        series1.set((new Date()).getTime(), scaleMessage.messages.getLast().getCurrentWeight());
 
         isStarted = true;
 
-        BROKER_URL = "tcp://r88jpm.messaging.internetofthings.ibmcloud.com:1883";
-        topic = "iot-2/type/Myweight/id/MV1/evt/+/fmt/json";
-        clientId ="a:r88jpm:app1";
-        authmethod = "a-r88jpm-rkppgbamza";
+        BROKER_URL = "tcp://ttm3q6.messaging.internetofthings.ibmcloud.com:1883";
+        topic = "iot-2/type/Weight/id/We1/evt/+/fmt/json";
+        clientId ="a:ttm3q6:app1";
+        authmethod = "a-ttm3q6-ei5ul9o5cs";
         authtoken = "4JE9nayAE+!2s4o_4T";
 
         //ADD MARKER ON GOOGLE MAP
@@ -107,11 +111,9 @@ public class MainManagedBean implements Serializable {
 
         column1.addWidget("gauge");
         column1.addWidget("chart");
-
+        column1.addWidget("manage");
         column2.addWidget("map");
         column2.addWidget("eventspanel");
-
-        column3.addWidget("manage");
 
         dashboardModel.addColumn(column1);
         dashboardModel.addColumn(column2);
@@ -183,6 +185,11 @@ public class MainManagedBean implements Serializable {
         curWeightlineModel.setTitle("Device Monitoring");
         curWeightlineModel.setLegendPosition("e");
         curWeightlineModel.setExtender("chartExtender");
+
+        periodicWeightlineModel = initPeriodicLinearModel();
+        periodicWeightlineModel.setTitle("Periodic Water usage graph");
+        periodicWeightlineModel.setLegendPosition("e");
+        periodicWeightlineModel.setExtender("chartExtender2");
     }
 
     public void rebootDevice() throws MqttException {
@@ -226,6 +233,36 @@ public class MainManagedBean implements Serializable {
         model.getAxis(AxisType.Y).setLabel("Values");
         return model;
     }
+    private LineChartModel initPeriodicLinearModel() {
+        model = new LineChartModel();
+        series2days = new LineChartSeries();
+        series2days.setLabel("Device 2 days history");
+
+        long minus2dayAgo = new Date().getTime() - 1000*60*60*24*2;
+        long plus3hours = 1000*60*60*3;
+
+        series2days.set(minus2dayAgo + 0  * plus3hours, 19);
+        series2days.set(minus2dayAgo + 1  * plus3hours, 15);
+        series2days.set(minus2dayAgo + 2  * plus3hours, 11);
+        series2days.set(minus2dayAgo + 3  * plus3hours, 8);
+        series2days.set(minus2dayAgo + 4  * plus3hours, 5);
+        series2days.set(minus2dayAgo + 5  * plus3hours, 3);
+        series2days.set(minus2dayAgo + 6  * plus3hours, 0);
+        series2days.set(minus2dayAgo + 6.15  * plus3hours, 19);
+        series2days.set(minus2dayAgo + 7  * plus3hours, 15);
+        series2days.set(minus2dayAgo + 8  * plus3hours, 13);
+        series2days.set(minus2dayAgo + 9 * plus3hours, 10);
+        series2days.set(minus2dayAgo + 10 * plus3hours, 9);
+        series2days.set(minus2dayAgo + 11 * plus3hours, 7);
+        series2days.set(minus2dayAgo + 12 * plus3hours, 5);
+        series2days.set(minus2dayAgo + 13 * plus3hours, 3);
+        series2days.set(minus2dayAgo + 14 * plus3hours, 2);
+        series2days.set(minus2dayAgo + 15 * plus3hours, 1);
+
+        model.addSeries(series2days);
+        model.getAxis(AxisType.Y).setLabel("Values");
+        return model;
+    }
 
 
     public MainManagedBean() {
@@ -262,11 +299,11 @@ public class MainManagedBean implements Serializable {
         String authmethod = "a-omzkv9-lzukrtsqgg";
         String authtoken = "iFUwTmeySz52iW6r-X";*/
 
-        BROKER_URL = "tcp://r88jpm.messaging.internetofthings.ibmcloud.com:1883";
-        topic = "iot-2/type/Myweight/id/MV1/evt/+/fmt/json";
-        clientId ="a:r88jpm:app1";
-        authmethod = "a-r88jpm-rkppgbamza";
-        authtoken = "4JE9nayAE+!2s4o_4T";
+        BROKER_URL = "tcp://ttm3q6.messaging.internetofthings.ibmcloud.com:1883";
+        topic = "iot-2/type/Weight/id/We1/evt/+/fmt/json";
+        clientId ="a:ttm3q6:app1";
+        authmethod = "a-ttm3q6-r2s3n3ndfi";
+        authtoken = "k8EQnsiZ9XA*2)dl9z";
 
         try {
             mqttClient = new MqttClient(BROKER_URL, clientId);
@@ -341,6 +378,9 @@ public class MainManagedBean implements Serializable {
         }
     }
 
+    public void generatePeriodicData(){
+
+    }
     public void addMessage(String summary) {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary,  null);
         FacesContext.getCurrentInstance().addMessage(null, message);
@@ -352,6 +392,10 @@ public class MainManagedBean implements Serializable {
 
     public LineChartModel getCurWeightlineModel() {
         return curWeightlineModel;
+    }
+
+    public LineChartModel getPeriodicWeightlineModel() {
+        return periodicWeightlineModel;
     }
 
     public List<ScaleMessage> getMessages() {

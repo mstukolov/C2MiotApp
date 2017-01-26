@@ -10,6 +10,23 @@
 <h:head>
     <title><ui:insert name="title">C2M</ui:insert></title>
     <link rel="stylesheet" href="resources/css/styles.css" />
+    <script type="application/javascript">
+        $( function() {
+            //$( "#resizable" ).resizable();
+            $( ".resizable" ).resizable(
+                {
+                    alsoResize: ".gmapClass, gauge"
+                }
+            );
+            $( ".chartPane" ).resizable(
+                {
+                    alsoResize: ".chartGraph > * > *",
+                    alsoResize: ".chartGraph > canvas"
+                }
+            );
+
+        } );
+    </script>
 </h:head>
 <h:body>
     <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript" ></script>
@@ -17,32 +34,33 @@
     <p:outputLabel value="Smart Cooler" style="font-size:48px; width: 350px; height: 40px"/>
 </f:view>
 
-
-
-       <h:form id="form1">
+    <h:form id="form1">
 
            <p:growl id="messages"/>
            <p:poll interval="15"
                    listener="#{mainManagedBean.refreshCurrentValues()}"
                              update=":form1:linechart,:form1:currentWeightGauge"/>
-
     <div style="height:500px">
 
             <p:growl id="msgs" showDetail="true" />
             <p:dashboard id="board" model="#{mainManagedBean.dashboardModel}">
                 <p:ajax event="reorder" listener="#{mainManagedBean.handleReorder}" update="messages" />
 
-                <p:panel id="gauge" header="Вес сейчас" toggleable="true" closable="true" style="width:880px;height:300px">
+                <p:panel id="gauge" styleClass="resizable" header="Вес сейчас" toggleable="true" closable="true" style="width:880px;height:300px">
+                    <p:panelGrid columns="2" style="border: none" styleClass="companyHeaderGrid">
                     <p:chart type="metergauge" id="currentWeightGauge"
                              model="#{mainManagedBean.meterGaugeChartModel}" style="width:400px;height:250px" />
+                    <p:clock pattern="HH:mm:ss dd.MM.yyyy" mode="server" style="font-size: large"/>
+                    </p:panelGrid>
                 </p:panel>
 
 
-                <p:panel id="chart" header="Онлайн-мониторинг за 10 минут" style="width:880px;height:450px" toggleable="true" closable="true">
+                <p:panel id="chart" styleClass="chartPane" header="Онлайн-мониторинг за 10 минут" style="width:880px;height:450px" toggleable="true" closable="true">
                     <p:chart type="line"
                              id="linechart"
                              model="#{mainManagedBean.curWeightlineModel}"
-                             style="width:800px;height:400px;"/>
+                             style="width:800px;height:400px;"
+                             styleClass="chartGraph"/>
 
                     <script type="application/javascript">
                         function chartExtender() {
@@ -81,28 +99,30 @@
                     </script>
                 </p:panel>
 
-                <p:panel id="map" header="Местоположение" style="width:880px;height:550px"  toggleable="true" closable="true">
-                    <p:gmap center="55.739732, 37.605508"
+                <p:panel id="map" styleClass="resizable" header="Местоположение" style="width:880px;height:500px"  toggleable="true" closable="true">
+                    <p:gmap id="gmap"
+                            styleClass="gmapClass"
+                            center="55.739732, 37.605508"
                             model="#{mainManagedBean.emptyModel}"
-                            zoom="15" type="terrain" style="width:860px;height:500px" />
+                            zoom="15" type="terrain" style="width:860px;height:450px;" />
                 </p:panel>
 
-                <p:panel id="eventspanel" header="Сообщения об ошибках" style="width:880px;height:325px" toggleable="true" closable="true">
+                <p:panel id="eventspanel" header="Сообщения об ошибках" style="width:880px;height:510px" toggleable="true" closable="true">
                     <p:dataTable id="eventsdata" var="events"
                                  rowIndexVar="rowIndex"
                                  rowStyleClass="#{events.type eq 'Critical' ? 'highlight1' : 'highlight2'}"
                                  value="#{mainManagedBean.eventsList}"
-                                 scrollable="true" scrollHeight="250"
+                                 scrollable="true" scrollHeight="400"
                                  style="height:500px">
 
-                        <p:column headerText="Date" style="width: 180px">
+                        <p:column headerText="Date" style="width: 180px" sortBy="#{events.date}">
                             <h:outputText value="#{events.date}"/>
                         </p:column>
-                        <p:column headerText="Type" style="width: 180px">
+                        <p:column headerText="Type" style="width: 180px" sortBy="#{events.type}">
                             <h:outputText value="#{events.type}" />
                         </p:column>
 
-                        <p:column headerText="DeviceId" style="width: 180px">
+                        <p:column headerText="DeviceId" style="width: 180px" sortBy="#{events.deviceid}">
                             <h:outputText value="#{events.deviceid}" />
                         </p:column>
 
@@ -134,7 +154,7 @@
                     <h:column>
 
                         <p:commandButton value="Статистика"
-                                         actionListener="#{mainManagedBean.stopMonitoring()}"
+                                         onclick="PF('dlg3').show();"
                                          style = "width: 400px; height: 50px"
                                          update=":form1:messages"/>
                         <p:commandButton value="Обновить Сообщения"
@@ -151,7 +171,50 @@
             </p:dashboard>
 
             <div style="clear:both" />
+        <p:dialog header="История за 2 дня" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" height="1000" width="1700">
+            <p:chart type="line"
+                     id="linechart2"
+                     model="#{mainManagedBean.periodicWeightlineModel}"
+                     style="width:1600px;height:900px;"
+                     styleClass="chartGraph"/>
 
+            <script type="application/javascript">
+                function chartExtender2() {
+                    var curTime = new Date();
+                    var minX = curTime - 1000*60*60*24*2;
+                    var maxX = curTime;
+                    this.cfg.axes = {
+                        yaxis : {
+                            label: "Объем",
+                            tickOptions : {
+                                formatString : "%d(kg.)",
+                                angle : 0
+                            }
+                        },
+                        xaxis : {
+                            renderer:$.jqplot.DateAxisRenderer,
+                            tickInterval:3*60*60,
+                            min:minX,
+                            max:maxX,
+                            rendererOptions: { tickRenderer: $.jqplot.CanvasAxisTickRenderer},
+                            label: "Время",
+                            tickOptions : {
+                                show: true,
+                                fontSize:'12pt',
+                                formatString : '%d:%m %H:%M',
+                                angle : -50
+                            }
+                        }
+                    }
+
+                    this.cfg.grid = {
+                        background: 'transparent',
+                        gridLineColor: '#303030',
+                        drawBorder: false,
+                    };
+                };
+            </script>
+        </p:dialog>
     </div>
        </h:form>
 </h:body>

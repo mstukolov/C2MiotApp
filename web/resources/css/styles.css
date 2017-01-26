@@ -9,7 +9,13 @@
 }
 .ui-dashboard-column {width:900px;}
 .highlight1 {
-    background: yellow  !important ;
+    background: indianred  !important ;
 }.highlight2 {
     background: wheat  !important ;
 }
+.companyHeaderGrid.ui-panelgrid>*>tr,
+.companyHeaderGrid.ui-panelgrid .ui-panelgrid-cell {
+    border: none;
+}
+#resizable { width: 150px; height: 150px; padding: 0.5em; }
+#resizable h3 { text-align: center; margin: 0; }
